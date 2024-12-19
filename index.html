@@ -7,28 +7,29 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            /* Light Mode Variablen */
-            --primary-color: #2C3E50;
-            --accent-color: #E74C3C;
-            --background-color: #F8F9FA;
-            --text-color: #2C3E50;
-            --card-bg: white;
-            --border-color: #E2E8F0;
-            --shadow-color: rgba(0, 0, 0, 0.05);
-            --quote-color: #666;
+            /* Monochrome Farbpalette */
+            --primary-color: #000000;
+            --accent-color: #FF3B30;
+            --success-color: #34C759;
+            --background-color: #FFFFFF;
+            --text-color: #000000;
+            --card-bg: #FFFFFF;
+            --border-color: #E5E5E5;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+            --quote-color: #666666;
         }
 
         @media (prefers-color-scheme: dark) {
             :root {
-                /* Dark Mode Variablen */
-                --primary-color: #3498DB;
-                --accent-color: #E74C3C;
-                --background-color: #1A202C;
-                --text-color: #E2E8F0;
-                --card-bg: #2D3748;
-                --border-color: #4A5568;
-                --shadow-color: rgba(0, 0, 0, 0.2);
-                --quote-color: #A0AEC0;
+                --primary-color: #FFFFFF;
+                --accent-color: #FF453A;
+                --success-color: #32D74B;
+                --background-color: #000000;
+                --text-color: #FFFFFF;
+                --card-bg: #1C1C1E;
+                --border-color: #2C2C2E;
+                --shadow-color: rgba(0, 0, 0, 0.3);
+                --quote-color: #8E8E93;
             }
         }
 
@@ -260,14 +261,14 @@
 
         .progress-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(40px, 1fr));
+            grid-template-columns: repeat(15, 1fr); /* 5 Reihen mit je 15 Tagen */
             gap: 0.5rem;
             margin: 2rem 0;
         }
 
         .day-box {
             aspect-ratio: 1;
-            background-color: #4A5568;
+            background-color: #8E8E93; /* Noch nicht gewesen - Grau */
             border-radius: 6px;
             display: flex;
             align-items: center;
@@ -275,18 +276,23 @@
             font-size: 0.8rem;
             color: white;
             cursor: help;
+            transition: transform 0.2s;
+        }
+
+        .day-box:hover {
+            transform: scale(1.1);
         }
 
         .day-box.completed {
-            background-color: #48BB78;
+            background-color: var(--success-color); /* Geschafft - Grün */
         }
 
         .day-box.failed {
-            background-color: #F56565;
+            background-color: var(--accent-color); /* Nicht geschafft - Rot */
         }
 
         .day-box.future {
-            background-color: #4A5568;
+            background-color: #8E8E93;
             opacity: 0.5;
         }
 
@@ -312,6 +318,32 @@
 
         .nav-menu.visible {
             display: flex;
+        }
+
+        /* Verbesserte Daily Check Styles */
+        .daily-challenge-item {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            transition: transform 0.2s;
+        }
+
+        .daily-challenge-item:hover {
+            transform: translateY(-2px);
+        }
+
+        .challenge-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .challenge-checkbox input[type="checkbox"] {
+            width: 24px;
+            height: 24px;
+            accent-color: var(--success-color);
         }
     </style>
 </head>
@@ -388,12 +420,18 @@
         <div class="progress-grid" id="progressGrid"></div>
     </div>
 
+    <div id="daily" class="page">
+        <h2>Daily Check</h2>
+        <div class="date-header"></div>
+        <div id="dailyCheckList"></div>
+    </div>
+
     <script>
         const challengeForm = document.getElementById('challengeForm');
         const challengesList = document.getElementById('challengesList');
         const maxChallengesWarning = document.getElementById('maxChallengesWarning');
         let challenges = [];
-        let dailyProgress = {};
+        let dailyProgress = JSON.parse(localStorage.getItem('dailyProgress')) || {};
         const today = new Date().toLocaleDateString('en-US');
         let startDate = null;
         let challengeActive = false;
@@ -532,32 +570,50 @@
 
         function updateDailyChecklist() {
             const dailyCheckList = document.getElementById('dailyCheckList');
-            document.querySelector('.date-header').textContent = `Today: ${today}`;
+            const dateHeader = document.querySelector('.date-header');
+            dateHeader.textContent = `Today: ${new Date().toLocaleDateString('en-US', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            })}`;
             
             dailyCheckList.innerHTML = '';
+            
+            if (challenges.length === 0) {
+                dailyCheckList.innerHTML = `
+                    <div class="daily-challenge-item">
+                        <p>No challenges created yet. Go to "Manage Challenges" to add some!</p>
+                    </div>`;
+                return;
+            }
+
             challenges.forEach((challenge, index) => {
                 const checked = dailyProgress[today]?.[index] || false;
                 const challengeDiv = document.createElement('div');
-                challengeDiv.className = 'challenge-item';
+                challengeDiv.className = 'daily-challenge-item';
                 challengeDiv.innerHTML = `
                     <div class="challenge-checkbox">
                         <input type="checkbox" id="check-${index}" 
                             ${checked ? 'checked' : ''} 
-                            onchange="updateProgress(${index}, this.checked)">
-                        <h3>${challenge.name}</h3>
+                            onchange="updateDailyProgress(${index}, this.checked)">
+                        <div>
+                            <h3>${challenge.name}</h3>
+                            <p>${challenge.description}</p>
+                        </div>
                     </div>
-                    <p>${challenge.description}</p>
                 `;
                 dailyCheckList.appendChild(challengeDiv);
             });
         }
 
-        function updateProgress(challengeIndex, completed) {
+        function updateDailyProgress(challengeIndex, completed) {
             if (!dailyProgress[today]) {
                 dailyProgress[today] = {};
             }
             dailyProgress[today][challengeIndex] = completed;
-            // Hier könnte man den Fortschritt im localStorage speichern
+            localStorage.setItem('dailyProgress', JSON.stringify(dailyProgress));
+            updateProgress(); // Aktualisiert auch die Progress-Ansicht
         }
 
         // Update existing updateChallengesList function to also update daily checklist
