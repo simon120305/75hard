@@ -153,6 +153,10 @@
 
         /* Neue Styles für Navigation und Cards */
         .nav-menu {
+            display: none;
+        }
+
+        .nav-menu.visible {
             display: flex;
             justify-content: center;
             gap: 1rem;
@@ -219,9 +223,9 @@
         }
 
         .challenge-checkbox input[type="checkbox"] {
-            width: 20px;
-            height: 20px;
-            accent-color: var(--primary-color);
+            width: 24px;
+            height: 24px;
+            accent-color: var(--success-color);
         }
 
         .date-header {
@@ -442,7 +446,14 @@
 
         // Load saved data from localStorage
         function loadSavedData() {
+            const savedChallenges = localStorage.getItem('challenges');
             const savedStart = localStorage.getItem('challengeStartDate');
+            
+            if (savedChallenges) {
+                challenges = JSON.parse(savedChallenges);
+                updateChallengesList();
+            }
+            
             if (savedStart) {
                 startDate = new Date(savedStart);
                 challengeActive = true;
@@ -536,6 +547,7 @@
             challenges.push({ name, description });
             updateChallengesList();
             challengeForm.reset();
+            maxChallengesWarning.style.display = 'none';
         });
 
         function updateChallengesList() {
@@ -547,12 +559,12 @@
                     <h3>${challenge.name}</h3>
                     <p>${challenge.description}</p>
                     <div class="button-group">
-                        <button class="edit-btn" onclick="editChallenge(${index})">Edit</button>
                         <button class="delete-btn" onclick="deleteChallenge(${index})">Delete</button>
                     </div>
                 `;
                 challengesList.appendChild(challengeDiv);
             });
+            saveChallenges();
         }
 
         function deleteChallenge(index) {
@@ -654,6 +666,11 @@
 
         // Update HTML language attribute
         document.documentElement.lang = 'en';
+
+        // Speichere Challenges im localStorage
+        function saveChallenges() {
+            localStorage.setItem('challenges', JSON.stringify(challenges));
+        }
     </script>
 </body>
 </html>
