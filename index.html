@@ -1,23 +1,101 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-<html>
+<!DOCTYPE html>
+<html lang="de">
 <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <meta http-equiv="Content-Style-Type" content="text/css">
-  <title></title>
-  <meta name="Generator" content="Cocoa HTML Writer">
-  <meta name="CocoaVersion" content="2299.74">
-  <style type="text/css">
-    p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 17.0px Courier; color: #eae96f; -webkit-text-stroke: #eae96f; background-color: #2e2e2e}
-    span.s1 {font-kerning: none}
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>75 Days Hard Challenge Tracker</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .challenge-form {
+            margin-bottom: 20px;
+            padding: 20px;
+            background-color: #f5f5f5;
+            border-radius: 5px;
+        }
+        .challenges-list {
+            margin-top: 20px;
+        }
+        .challenge-item {
+            padding: 10px;
+            margin-bottom: 10px;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+    </style>
 </head>
 <body>
-<p class="p1"><span class="s1">&lt;!DOCTYPE html&gt;</span></p>
-<p class="p1"><span class="s1">&lt;html&gt;</span></p>
-<p class="p1"><span class="s1">&lt;body&gt;</span></p>
-<p class="p1"><span class="s1">&lt;h1&gt;Hello World&lt;/h1&gt;</span></p>
-<p class="p1"><span class="s1">&lt;p&gt;I'm hosted with GitHub Pages.&lt;/p&gt;</span></p>
-<p class="p1"><span class="s1">&lt;/body&gt;</span></p>
-<p class="p1"><span class="s1">&lt;/html&gt;</span></p>
+    <h1>75 Days Hard Challenge Tracker</h1>
+
+    <div class="challenge-form">
+        <h2>Neue Challenge erstellen</h2>
+        <form id="challengeForm">
+            <div>
+                <label for="challengeName">Challenge Name:</label><br>
+                <input type="text" id="challengeName" required>
+            </div>
+            <div>
+                <label for="challengeDescription">Beschreibung:</label><br>
+                <textarea id="challengeDescription" required></textarea>
+            </div>
+            <button type="submit">Challenge hinzufügen</button>
+        </form>
+        <p id="maxChallengesWarning" style="color: red; display: none;">
+            Maximale Anzahl von Challenges (10) erreicht!
+        </p>
+    </div>
+
+    <div class="challenges-list">
+        <h2>Meine Challenges</h2>
+        <div id="challengesList"></div>
+    </div>
+
+    <script>
+        const challengeForm = document.getElementById('challengeForm');
+        const challengesList = document.getElementById('challengesList');
+        const maxChallengesWarning = document.getElementById('maxChallengesWarning');
+        let challenges = [];
+
+        challengeForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            if (challenges.length >= 10) {
+                maxChallengesWarning.style.display = 'block';
+                return;
+            }
+
+            const name = document.getElementById('challengeName').value;
+            const description = document.getElementById('challengeDescription').value;
+
+            challenges.push({ name, description });
+            updateChallengesList();
+            challengeForm.reset();
+        });
+
+        function updateChallengesList() {
+            challengesList.innerHTML = '';
+            challenges.forEach((challenge, index) => {
+                const challengeDiv = document.createElement('div');
+                challengeDiv.className = 'challenge-item';
+                challengeDiv.innerHTML = `
+                    <h3>${challenge.name}</h3>
+                    <p>${challenge.description}</p>
+                    <button onclick="deleteChallenge(${index})">Löschen</button>
+                `;
+                challengesList.appendChild(challengeDiv);
+            });
+        }
+
+        function deleteChallenge(index) {
+            challenges.splice(index, 1);
+            updateChallengesList();
+            maxChallengesWarning.style.display = 'none';
+        }
+    </script>
 </body>
 </html>
