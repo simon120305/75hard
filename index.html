@@ -7,10 +7,29 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
         :root {
+            /* Light Mode Variablen */
             --primary-color: #2C3E50;
             --accent-color: #E74C3C;
             --background-color: #F8F9FA;
             --text-color: #2C3E50;
+            --card-bg: white;
+            --border-color: #E2E8F0;
+            --shadow-color: rgba(0, 0, 0, 0.05);
+            --quote-color: #666;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                /* Dark Mode Variablen */
+                --primary-color: #3498DB;
+                --accent-color: #E74C3C;
+                --background-color: #1A202C;
+                --text-color: #E2E8F0;
+                --card-bg: #2D3748;
+                --border-color: #4A5568;
+                --shadow-color: rgba(0, 0, 0, 0.2);
+                --quote-color: #A0AEC0;
+            }
         }
 
         body {
@@ -34,9 +53,9 @@
         .challenge-form {
             margin-bottom: 2rem;
             padding: 2rem;
-            background-color: white;
+            background-color: var(--card-bg);
             border-radius: 12px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            box-shadow: 0 4px 6px var(--shadow-color);
         }
 
         .form-group {
@@ -52,10 +71,12 @@
         input, textarea {
             width: 100%;
             padding: 0.75rem;
-            border: 2px solid #E2E8F0;
+            border: 2px solid var(--border-color);
             border-radius: 8px;
             font-size: 1rem;
             transition: border-color 0.2s;
+            background-color: var(--card-bg);
+            color: var(--text-color);
         }
 
         input:focus, textarea:focus {
@@ -81,21 +102,23 @@
         }
 
         button:hover {
-            background-color: #34495E;
+            background-color: #2980B9;
             transform: translateY(-1px);
         }
 
         .challenge-item {
             padding: 1.5rem;
             margin-bottom: 1rem;
-            background-color: white;
+            background-color: var(--card-bg);
             border-radius: 12px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            box-shadow: 0 4px 6px var(--shadow-color);
             transition: transform 0.2s;
         }
 
         .challenge-item:hover {
             transform: translateY(-2px);
+            box-shadow: 0 6px 8px var(--shadow-color),
+                        0 0 0 1px var(--border-color);
         }
 
         .challenge-item h3 {
@@ -123,7 +146,7 @@
         .motivation-quote {
             text-align: center;
             font-style: italic;
-            color: #666;
+            color: var(--quote-color);
             margin: 2rem 0;
         }
 
@@ -139,15 +162,16 @@
             text-decoration: none;
             color: var(--text-color);
             padding: 1rem 2rem;
-            background-color: white;
+            background-color: var(--card-bg);
             border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            box-shadow: 0 4px 6px var(--shadow-color);
             transition: all 0.2s;
         }
 
         .nav-link:hover {
             transform: translateY(-2px);
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 6px 8px var(--shadow-color),
+                        0 0 0 1px var(--border-color);
         }
 
         .nav-link.active {
@@ -171,10 +195,10 @@
         }
 
         .home-card {
-            background-color: white;
+            background-color: var(--card-bg);
             padding: 2rem;
             border-radius: 12px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            box-shadow: 0 4px 6px var(--shadow-color);
             text-align: center;
             cursor: pointer;
             transition: all 0.2s;
@@ -182,7 +206,8 @@
 
         .home-card:hover {
             transform: translateY(-3px);
-            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 6px 8px var(--shadow-color),
+                        0 0 0 1px var(--border-color);
         }
 
         .challenge-checkbox {
@@ -195,6 +220,7 @@
         .challenge-checkbox input[type="checkbox"] {
             width: 20px;
             height: 20px;
+            accent-color: var(--primary-color);
         }
 
         .date-header {
