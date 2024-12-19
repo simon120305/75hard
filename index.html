@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="de">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -229,59 +229,163 @@
             font-size: 1.5rem;
             color: var(--primary-color);
         }
+
+        /* Neue Styles für Start und Fortschritt */
+        .start-container {
+            text-align: center;
+            padding: 4rem 2rem;
+        }
+
+        .progress-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+
+        .stat-card {
+            background-color: var(--card-bg);
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px var(--shadow-color);
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .progress-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(40px, 1fr));
+            gap: 0.5rem;
+            margin: 2rem 0;
+        }
+
+        .day-box {
+            aspect-ratio: 1;
+            background-color: #4A5568;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            color: white;
+            cursor: help;
+        }
+
+        .day-box.completed {
+            background-color: #48BB78;
+        }
+
+        .day-box.failed {
+            background-color: #F56565;
+        }
+
+        .day-box.future {
+            background-color: #4A5568;
+            opacity: 0.5;
+        }
+
+        .start-btn {
+            background-color: var(--accent-color);
+            color: white;
+            padding: 1rem 3rem;
+            font-size: 1.2rem;
+            border-radius: 12px;
+            margin-top: 2rem;
+            transition: transform 0.2s, background-color 0.2s;
+        }
+
+        .start-btn:hover {
+            background-color: #C0392B;
+            transform: translateY(-2px);
+        }
+
+        /* Anpassung der Navigation */
+        .nav-menu {
+            display: none;
+        }
+
+        .nav-menu.visible {
+            display: flex;
+        }
     </style>
 </head>
 <body>
-    <h1>75 Days Hard Challenge</h1>
-    <p class="motivation-quote">"Stärke wächst in den Momenten, wenn du denkst, du kannst nicht mehr weitermachen, aber machst trotzdem weiter."</p>
+    <div id="start" class="page active">
+        <div class="start-container">
+            <h1>75 Days Hard Challenge</h1>
+            <p class="motivation-quote">"Ready for 75 days that will change your life?"</p>
+            <button class="start-btn" onclick="startChallenge()">Start Challenge</button>
+        </div>
+    </div>
 
     <nav class="nav-menu">
         <a href="#home" class="nav-link active" onclick="showPage('home')">Home</a>
-        <a href="#challenges" class="nav-link" onclick="showPage('challenges')">Challenges verwalten</a>
-        <a href="#daily" class="nav-link" onclick="showPage('daily')">Täglicher Check</a>
+        <a href="#challenges" class="nav-link" onclick="showPage('challenges')">Manage Challenges</a>
+        <a href="#daily" class="nav-link" onclick="showPage('daily')">Daily Check</a>
+        <a href="#progress" class="nav-link" onclick="showPage('progress')">Progress</a>
     </nav>
 
     <div id="home" class="page active">
         <div class="home-cards">
             <div class="home-card" onclick="showPage('challenges')">
-                <h2>Challenges verwalten</h2>
-                <p>Füge neue Challenges hinzu oder bearbeite bestehende</p>
+                <h2>Manage Challenges</h2>
+                <p>Add new challenges or edit existing ones</p>
             </div>
             <div class="home-card" onclick="showPage('daily')">
-                <h2>Täglicher Check</h2>
-                <p>Markiere deine erledigten Challenges für heute</p>
+                <h2>Daily Check</h2>
+                <p>Mark your completed challenges for today</p>
             </div>
         </div>
     </div>
 
     <div id="challenges" class="page">
         <div class="challenge-form">
-            <h2>Neue Challenge erstellen</h2>
+            <h2>Create New Challenge</h2>
             <form id="challengeForm">
                 <div class="form-group">
                     <label for="challengeName">Challenge Name</label>
-                    <input type="text" id="challengeName" required placeholder="z.B. Täglich 5km laufen">
+                    <input type="text" id="challengeName" required placeholder="e.g., Run 5km daily">
                 </div>
                 <div class="form-group">
-                    <label for="challengeDescription">Beschreibung</label>
-                    <textarea id="challengeDescription" required placeholder="Beschreibe deine Challenge im Detail..."></textarea>
+                    <label for="challengeDescription">Description</label>
+                    <textarea id="challengeDescription" required placeholder="Describe your challenge in detail..."></textarea>
                 </div>
-                <button type="submit">+ Challenge hinzufügen</button>
+                <button type="submit">+ Add Challenge</button>
             </form>
             <p id="maxChallengesWarning" style="display: none;">
-                Maximale Anzahl von Challenges (10) erreicht!
+                Maximum number of challenges (10) reached!
             </p>
         </div>
 
         <div class="challenges-list">
-            <h2>Meine Challenges</h2>
+            <h2>My Challenges</h2>
             <div id="challengesList"></div>
         </div>
     </div>
 
-    <div id="daily" class="page">
-        <h2 class="date-header"></h2>
-        <div id="dailyCheckList" class="challenges-list"></div>
+    <div id="progress" class="page">
+        <h2>Your Progress</h2>
+        <div class="progress-stats">
+            <div class="stat-card">
+                <div class="stat-number" id="daysLeft">75</div>
+                <div>Days Left</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="completionPercentage">0%</div>
+                <div>Completed</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="currentStreak">0</div>
+                <div>Current Streak</div>
+            </div>
+        </div>
+        <div class="progress-grid" id="progressGrid"></div>
     </div>
 
     <script>
@@ -290,7 +394,91 @@
         const maxChallengesWarning = document.getElementById('maxChallengesWarning');
         let challenges = [];
         let dailyProgress = {};
-        const today = new Date().toLocaleDateString('de-DE');
+        const today = new Date().toLocaleDateString('en-US');
+        let startDate = null;
+        let challengeActive = false;
+
+        // Load saved data from localStorage
+        function loadSavedData() {
+            const savedStart = localStorage.getItem('challengeStartDate');
+            if (savedStart) {
+                startDate = new Date(savedStart);
+                challengeActive = true;
+                document.querySelector('.nav-menu').classList.add('visible');
+                showPage('progress');
+                updateProgress();
+            }
+        }
+
+        function startChallenge() {
+            startDate = new Date();
+            challengeActive = true;
+            localStorage.setItem('challengeStartDate', startDate.toISOString());
+            document.querySelector('.nav-menu').classList.add('visible');
+            showPage('progress');
+            updateProgress();
+        }
+
+        function updateProgress() {
+            if (!startDate) return;
+
+            const today = new Date();
+            const daysPassed = Math.floor((today - startDate) / (1000 * 60 * 60 * 24));
+            const daysLeft = Math.max(0, 75 - daysPassed);
+            const completionPercentage = Math.min(100, Math.round((daysPassed / 75) * 100));
+
+            document.getElementById('daysLeft').textContent = daysLeft;
+            document.getElementById('completionPercentage').textContent = `${completionPercentage}%`;
+
+            // Update progress grid
+            const progressGrid = document.getElementById('progressGrid');
+            progressGrid.innerHTML = '';
+
+            for (let i = 0; i < 75; i++) {
+                const dayDate = new Date(startDate);
+                dayDate.setDate(startDate.getDate() + i);
+                
+                const dayBox = document.createElement('div');
+                dayBox.className = 'day-box';
+                dayBox.textContent = i + 1;
+                
+                if (i < daysPassed) {
+                    const dateStr = dayDate.toLocaleDateString('en-US');
+                    const allTasksCompleted = Object.values(dailyProgress[dateStr] || {})
+                        .every(task => task === true);
+                    
+                    if (allTasksCompleted) {
+                        dayBox.classList.add('completed');
+                    } else {
+                        dayBox.classList.add('failed');
+                    }
+                } else {
+                    dayBox.classList.add('future');
+                }
+
+                // Tooltip mit Datum
+                dayBox.title = dayDate.toLocaleDateString('en-US');
+                progressGrid.appendChild(dayBox);
+            }
+
+            // Update streak
+            let streak = 0;
+            for (let i = daysPassed - 1; i >= 0; i--) {
+                const checkDate = new Date(startDate);
+                checkDate.setDate(startDate.getDate() + i);
+                const dateStr = checkDate.toLocaleDateString('en-US');
+                
+                const allTasksCompleted = Object.values(dailyProgress[dateStr] || {})
+                    .every(task => task === true);
+                
+                if (allTasksCompleted) {
+                    streak++;
+                } else {
+                    break;
+                }
+            }
+            document.getElementById('currentStreak').textContent = streak;
+        }
 
         challengeForm.addEventListener('submit', function(e) {
             e.preventDefault();
@@ -316,7 +504,7 @@
                 challengeDiv.innerHTML = `
                     <h3>${challenge.name}</h3>
                     <p>${challenge.description}</p>
-                    <button class="delete-btn" onclick="deleteChallenge(${index})">Löschen</button>
+                    <button class="delete-btn" onclick="deleteChallenge(${index})">Delete</button>
                 `;
                 challengesList.appendChild(challengeDiv);
             });
@@ -344,7 +532,7 @@
 
         function updateDailyChecklist() {
             const dailyCheckList = document.getElementById('dailyCheckList');
-            document.querySelector('.date-header').textContent = `Heute: ${today}`;
+            document.querySelector('.date-header').textContent = `Today: ${today}`;
             
             dailyCheckList.innerHTML = '';
             challenges.forEach((challenge, index) => {
@@ -380,6 +568,29 @@
                 updateDailyChecklist();
             }
         };
+
+        // Update existing showPage function
+        const originalShowPage = showPage;
+        showPage = function(pageId) {
+            if (!challengeActive && pageId !== 'start') return;
+            originalShowPage(pageId);
+            if (pageId === 'progress') {
+                updateProgress();
+            }
+        };
+
+        // Update existing updateProgress function
+        const originalUpdateProgress = updateProgress;
+        updateProgress = function(challengeIndex, completed) {
+            originalUpdateProgress(challengeIndex, completed);
+            updateProgress();
+        };
+
+        // Load saved data on page load
+        loadSavedData();
+
+        // Update HTML language attribute
+        document.documentElement.lang = 'en';
     </script>
 </body>
 </html>
