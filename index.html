@@ -4,48 +4,148 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>75 Days Hard Challenge Tracker</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --primary-color: #2C3E50;
+            --accent-color: #E74C3C;
+            --background-color: #F8F9FA;
+            --text-color: #2C3E50;
+        }
+
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Inter', -apple-system, sans-serif;
             max-width: 800px;
             margin: 0 auto;
             padding: 20px;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            line-height: 1.6;
         }
+
+        h1 {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 2rem;
+            color: var(--primary-color);
+            font-weight: 700;
+        }
+
         .challenge-form {
-            margin-bottom: 20px;
-            padding: 20px;
-            background-color: #f5f5f5;
-            border-radius: 5px;
+            margin-bottom: 2rem;
+            padding: 2rem;
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
         }
-        .challenges-list {
-            margin-top: 20px;
+
+        .form-group {
+            margin-bottom: 1.5rem;
         }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #E2E8F0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.2s;
+        }
+
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        button {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: transform 0.2s, background-color 0.2s;
+        }
+
+        button:hover {
+            background-color: #34495E;
+            transform: translateY(-1px);
+        }
+
         .challenge-item {
-            padding: 10px;
-            margin-bottom: 10px;
-            background-color: #fff;
-            border: 1px solid #ddd;
-            border-radius: 5px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            transition: transform 0.2s;
+        }
+
+        .challenge-item:hover {
+            transform: translateY(-2px);
+        }
+
+        .challenge-item h3 {
+            margin: 0 0 0.5rem 0;
+            color: var(--primary-color);
+        }
+
+        .delete-btn {
+            background-color: var(--accent-color);
+            padding: 0.5rem 1rem;
+            font-size: 0.9rem;
+        }
+
+        .delete-btn:hover {
+            background-color: #C0392B;
+        }
+
+        #maxChallengesWarning {
+            color: var(--accent-color);
+            font-weight: 500;
+            text-align: center;
+            margin-top: 1rem;
+        }
+
+        .motivation-quote {
+            text-align: center;
+            font-style: italic;
+            color: #666;
+            margin: 2rem 0;
         }
     </style>
 </head>
 <body>
-    <h1>75 Days Hard Challenge Tracker</h1>
+    <h1>75 Days Hard Challenge</h1>
+    <p class="motivation-quote">"Stärke wächst in den Momenten, wenn du denkst, du kannst nicht mehr weitermachen, aber machst trotzdem weiter."</p>
 
     <div class="challenge-form">
         <h2>Neue Challenge erstellen</h2>
         <form id="challengeForm">
-            <div>
-                <label for="challengeName">Challenge Name:</label><br>
-                <input type="text" id="challengeName" required>
+            <div class="form-group">
+                <label for="challengeName">Challenge Name</label>
+                <input type="text" id="challengeName" required placeholder="z.B. Täglich 5km laufen">
             </div>
-            <div>
-                <label for="challengeDescription">Beschreibung:</label><br>
-                <textarea id="challengeDescription" required></textarea>
+            <div class="form-group">
+                <label for="challengeDescription">Beschreibung</label>
+                <textarea id="challengeDescription" required placeholder="Beschreibe deine Challenge im Detail..."></textarea>
             </div>
-            <button type="submit">Challenge hinzufügen</button>
+            <button type="submit">+ Challenge hinzufügen</button>
         </form>
-        <p id="maxChallengesWarning" style="color: red; display: none;">
+        <p id="maxChallengesWarning" style="display: none;">
             Maximale Anzahl von Challenges (10) erreicht!
         </p>
     </div>
@@ -85,7 +185,7 @@
                 challengeDiv.innerHTML = `
                     <h3>${challenge.name}</h3>
                     <p>${challenge.description}</p>
-                    <button onclick="deleteChallenge(${index})">Löschen</button>
+                    <button class="delete-btn" onclick="deleteChallenge(${index})">Löschen</button>
                 `;
                 challengesList.appendChild(challengeDiv);
             });
