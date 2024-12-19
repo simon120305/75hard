@@ -416,6 +416,10 @@
                 <div class="stat-number" id="currentStreak">0</div>
                 <div>Current Streak</div>
             </div>
+            <div class="stat-card">
+                <div class="stat-number" id="perfectDays">0</div>
+                <div>Perfect Days</div>
+            </div>
         </div>
         <div class="progress-grid" id="progressGrid"></div>
     </div>
@@ -542,7 +546,10 @@
                 challengeDiv.innerHTML = `
                     <h3>${challenge.name}</h3>
                     <p>${challenge.description}</p>
-                    <button class="delete-btn" onclick="deleteChallenge(${index})">Delete</button>
+                    <div class="button-group">
+                        <button class="edit-btn" onclick="editChallenge(${index})">Edit</button>
+                        <button class="delete-btn" onclick="deleteChallenge(${index})">Delete</button>
+                    </div>
                 `;
                 challengesList.appendChild(challengeDiv);
             });
