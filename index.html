@@ -516,14 +516,67 @@
             transform: translateY(-2px);
             box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2);
         }
+
+        /* Login Styles */
+        .login-container {
+            max-width: 400px;
+            margin: 100px auto;
+            padding: 2rem;
+            background: var(--card-bg);
+            border-radius: 16px;
+            box-shadow: 0 4px 6px var(--shadow-color);
+        }
+
+        .login-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .login-input {
+            padding: 1rem;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 1rem;
+            background: var(--background-color);
+            color: var(--text-color);
+        }
+
+        .login-btn {
+            background: var(--success-color);
+            color: white;
+            padding: 1rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .logout-btn {
+            margin-left: auto;
+            background: var(--accent-color);
+        }
     </style>
 </head>
 <body>
-    <div id="start" class="page active">
-        <div class="start-container">
+    <div id="login" class="page active">
+        <div class="login-container">
             <h1>75 Days Hard Challenge</h1>
-            <p class="motivation-quote" id="motivationalQuote">"Loading quote..."</p>
-            <button class="start-btn" onclick="startChallenge()">Start Challenge</button>
+            <div class="login-form">
+                <select id="userSelect" class="login-input">
+                    <option value="">Select User</option>
+                    <option value="Simon">Simon</option>
+                    <option value="user2">User 2</option>
+                    <option value="user3">User 3</option>
+                </select>
+                <input type="password" id="passwordInput" class="login-input" placeholder="Password">
+                <button onclick="login()" class="login-btn">Login</button>
+            </div>
         </div>
     </div>
 
@@ -531,6 +584,7 @@
         <a href="#home" class="nav-link active" onclick="showPage('home')">Home</a>
         <a href="#daily" class="nav-link" onclick="showPage('daily')">Daily Check</a>
         <a href="#progress" class="nav-link" onclick="showPage('progress')">Progress</a>
+        <button onclick="logout()" class="nav-link logout-btn">Logout</button>
     </nav>
 
     <div id="home" class="page active">
@@ -610,6 +664,13 @@
 
         const LATITUDE = 48.2082; // Latitude für Wien
         const LONGITUDE = 16.3738; // Longitude für Wien
+
+        let currentUser = null;
+        const USERS = {
+            'Simon': 'test123',
+            'user2': 'test123',
+            'user3': 'test123'
+        };
 
         async function updateQuote() {
             try {
@@ -702,20 +763,20 @@
         }
 
         function showPage(pageId) {
-            if (!challengeActive && pageId !== 'start') return;
+            if (!currentUser && pageId !== 'login') {
+                pageId = 'login';
+            }
+            if (!challengeActive && pageId !== 'start' && pageId !== 'login') return;
             
-            // Hide all pages
             document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
             document.querySelectorAll('.nav-link').forEach(link => link.classList.remove('active'));
             
-            // Show selected page
             document.getElementById(pageId).classList.add('active');
             const navLink = document.querySelector(`[href="#${pageId}"]`);
             if (navLink) {
                 navLink.classList.add('active');
             }
 
-            // Update page specific content
             if (pageId === 'daily') {
                 updateDailyChecklist();
                 updateWeather();
@@ -733,12 +794,18 @@
             updateProgress();
         }
 
+        function getStorageKey(key) {
+            return `${currentUser}_${key}`;
+        }
+
         function loadSavedData() {
-            const savedStart = localStorage.getItem('challengeStartDate');
-            const savedProgress = localStorage.getItem('dailyProgress');
+            const savedStart = localStorage.getItem(getStorageKey('challengeStartDate'));
+            const savedProgress = localStorage.getItem(getStorageKey('dailyProgress'));
             
             if (savedProgress) {
                 dailyProgress = JSON.parse(savedProgress);
+            } else {
+                dailyProgress = {};
             }
             
             if (savedStart) {
@@ -757,7 +824,7 @@
         function startChallenge() {
             startDate = new Date();
             challengeActive = true;
-            localStorage.setItem('challengeStartDate', startDate.toISOString());
+            localStorage.setItem(getStorageKey('challengeStartDate'), startDate.toISOString());
             document.querySelector('.nav-menu').classList.add('visible');
             showPage('progress');
             updateProgress();
@@ -864,23 +931,38 @@
                 dailyProgress[today] = {};
             }
             dailyProgress[today][challengeIndex] = completed;
-            localStorage.setItem('dailyProgress', JSON.stringify(dailyProgress));
+            localStorage.setItem(getStorageKey('dailyProgress'), JSON.stringify(dailyProgress));
             updateProgress();
         }
 
-        // Update existing showPage function
-        const originalShowPage = showPage;
-        showPage = function(pageId) {
-            if (!challengeActive && pageId !== 'start') return;
-            originalShowPage(pageId);
-            if (pageId === 'progress') {
-                updateProgress();
-            }
-        };
+        // Login Funktion
+        function login() {
+            const userSelect = document.getElementById('userSelect');
+            const passwordInput = document.getElementById('passwordInput');
+            const username = userSelect.value;
+            const password = passwordInput.value;
 
-        // Load saved data on page load
+            if (USERS[username] === password) {
+                currentUser = username;
+                document.getElementById('login').style.display = 'none';
+                loadSavedData();
+                passwordInput.value = ''; // Clear password
+            } else {
+                alert('Invalid username or password');
+            }
+        }
+
+        // Logout Funktion
+        function logout() {
+            currentUser = null;
+            document.getElementById('login').style.display = 'block';
+            document.querySelector('.nav-menu').classList.remove('visible');
+            showPage('login');
+        }
+
+        // Entferne den alten Event Listener und füge den neuen hinzu
         document.addEventListener('DOMContentLoaded', function() {
-            loadSavedData();
+            showPage('login');
         });
 
         // Update HTML language attribute
