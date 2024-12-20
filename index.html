@@ -515,10 +515,28 @@
     </div>
 
     <script>
-        const challengeForm = document.getElementById('challengeForm');
-        const challengesList = document.getElementById('challengesList');
-        const maxChallengesWarning = document.getElementById('maxChallengesWarning');
-        let challenges = [];
+        let challenges = [
+            {
+                name: "1 Hour TikTok",
+                description: "Limit TikTok usage to exactly 1 hour per day. Use screen time tracking to verify."
+            },
+            {
+                name: "45 Minutes Workout",
+                description: "Complete a 45-minute workout session. Can be split into multiple sessions throughout the day."
+            },
+            {
+                name: "Read 10 Pages",
+                description: "Read at least 10 pages of any book. Audiobooks don't count!"
+            },
+            {
+                name: "Healthy Nutrition",
+                description: "No junk food, no sugary drinks. Eat balanced meals with proteins, vegetables, and good carbs."
+            },
+            {
+                name: "2 Hours Learning",
+                description: "Spend 2 hours learning/studying. Track your time and stay focused without distractions."
+            }
+        ];
         let dailyProgress = JSON.parse(localStorage.getItem('dailyProgress')) || {};
         const today = new Date().toLocaleDateString('en-US');
         let startDate = null;
@@ -639,19 +657,13 @@
         }
 
         function updateEverything() {
-            updateChallengesList();
             updateDailyChecklist();
             updateProgress();
         }
 
         function loadSavedData() {
-            const savedChallenges = localStorage.getItem('challenges');
             const savedStart = localStorage.getItem('challengeStartDate');
             const savedProgress = localStorage.getItem('dailyProgress');
-            
-            if (savedChallenges) {
-                challenges = JSON.parse(savedChallenges);
-            }
             
             if (savedProgress) {
                 dailyProgress = JSON.parse(savedProgress);
@@ -744,46 +756,6 @@
             document.getElementById('currentStreak').textContent = streak;
         }
 
-        challengeForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            if (challenges.length >= 10) {
-                maxChallengesWarning.style.display = 'block';
-                return;
-            }
-
-            const name = document.getElementById('challengeName').value;
-            const description = document.getElementById('challengeDescription').value;
-
-            challenges.push({ name, description });
-            updateChallengesList();
-            challengeForm.reset();
-            maxChallengesWarning.style.display = 'none';
-        });
-
-        function updateChallengesList() {
-            challengesList.innerHTML = '';
-            challenges.forEach((challenge, index) => {
-                const challengeDiv = document.createElement('div');
-                challengeDiv.className = 'challenge-item';
-                challengeDiv.innerHTML = `
-                    <h3>${challenge.name}</h3>
-                    <p>${challenge.description}</p>
-                    <div class="button-group">
-                        <button class="delete-btn" onclick="deleteChallenge(${index})">Delete</button>
-                    </div>
-                `;
-                challengesList.appendChild(challengeDiv);
-            });
-            saveChallenges();
-        }
-
-        function deleteChallenge(index) {
-            challenges.splice(index, 1);
-            updateChallengesList();
-            maxChallengesWarning.style.display = 'none';
-        }
-
         function updateDailyChecklist() {
             const dailyCheckList = document.getElementById('dailyCheckList');
             const dateHeader = document.querySelector('.date-header');
@@ -796,14 +768,6 @@
             
             dailyCheckList.innerHTML = '';
             
-            if (challenges.length === 0) {
-                dailyCheckList.innerHTML = `
-                    <div class="daily-challenge-item">
-                        <p>No challenges created yet. Go to "Manage Challenges" to add some!</p>
-                    </div>`;
-                return;
-            }
-
             challenges.forEach((challenge, index) => {
                 const checked = dailyProgress[today]?.[index] || false;
                 const challengeDiv = document.createElement('div');
@@ -832,15 +796,6 @@
             updateProgress();
         }
 
-        // Update existing updateChallengesList function to also update daily checklist
-        const originalUpdateChallengesList = updateChallengesList;
-        updateChallengesList = function() {
-            originalUpdateChallengesList();
-            if (document.getElementById('daily').classList.contains('active')) {
-                updateDailyChecklist();
-            }
-        };
-
         // Update existing showPage function
         const originalShowPage = showPage;
         showPage = function(pageId) {
@@ -858,11 +813,6 @@
 
         // Update HTML language attribute
         document.documentElement.lang = 'en';
-
-        // Speichere Challenges im localStorage
-        function saveChallenges() {
-            localStorage.setItem('challenges', JSON.stringify(challenges));
-        }
 
         // Add auto-refresh for quotes and weather
         setInterval(updateQuote, 3600000); // Update quote every hour
